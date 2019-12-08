@@ -55,4 +55,47 @@
         </div>
     </div>
 </body>
+<script src="./libs/http.js"></script>
+<script>
+    // console.log(allUrl.user_login);
+    $(function () {
+        $.ajax({
+            url: allUrl.user_info,
+            type: 'get',
+            dataType: 'json',
+            // headers: { 'Authorization': localStorage.getItem('token') },
+            // 因为每一个网页都是需要一个token来知道是否是该用户的所以可以在ajax时候设置默认值
+            success: function (res) {
+                console.log(res);
+                if (res.code === 200) {
+                    $('.user_info img').attr('src', res.data.userPic);
+                    $('.user_info span').html('欢迎&nbsp;&nbsp;' + res.data.nickname);
+                    $('.user_center_link img').attr('src', res.data.userPic);
+                }
+            }
+        })
+
+
+
+
+
+        /* let xhr = new XMLHttpRequest();
+        xhr.open('get', allUrl.user_info);
+        xhr.setRequestHeader('Authorization', localStorage.getItem('token'));
+        xhr.send();
+        xhr.onreadystatechange = function () {
+            if (xhr.status === 200 && xhr.readyState === 4) {
+                let res = JSON.parse(xhr.responseText);
+                if (res.code === 200) {
+                    console.log(res);
+                    $('.user_info img').attr('src', res.data.userPic);
+                    $('.user_info span').html('欢迎&nbsp;&nbsp;' + res.data.nickname);
+                    $('.user_center_link img').attr('src', res.data.userPic);
+                }
+            }
+        } */
+
+    })
+</script>
+
 </html>
