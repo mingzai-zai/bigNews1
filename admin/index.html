@@ -75,7 +75,14 @@
             }
         })
 
-
+        //退出
+        $('.logout').on('click', function () {
+            alert('确定要退出吗');
+            localStorage.removeItem('token');
+            // localStorage.clear这个方法是吧所有的数据删光，remove只是一个；
+            // 个人认为这里没有考虑到如果很多人登录都存在token里面，一个退出就把token的所有删完，
+            location.href = './login.html';
+        })
 
 
 
