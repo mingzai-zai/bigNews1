@@ -54,7 +54,10 @@
         <!-- 顶部栏 -->
         <div class="header_bar">
             <div class="user_center_link">
-                <a href="./user.html" target="main_frame">个人中心</a>
+                <a href="./user.html" target="main_frame" onclick="$('#user').trigger('click')">个人中心</a>
+                <!-- 该方法的返回的是事件处理函数的返回值，而不是具有可链性的 jQuery 对象。此外，如果没有处理程序被触发，则这个方法返回 undefined。 -->
+                <!-- <a href="./user.html" target="main_frame" onclick="$('#user').click()">个人中心</a> -->
+                <!-- 只是点击而已同时触发他本来注册的点击事件，没有其他效果 -->
                 <img src="images/2.jpg" alt="person">
                 <a href="javascript:void(0)" class="logout"><i class="iconfont icon-tuichu"></i> 退出</a>
             </div>
@@ -118,7 +121,7 @@
                 $('ul.level02').slideToggle();
                 $('ul.level02 li:eq(0) a')[0].click();
                 // jquery对象无法调用,点击的A标签中的文字了,其他元素也不能用jq的click
-                // $('ul.level02 li:eq(0) a').click();
+                // $('ul.level02 li:eq(0) a').click();可以点击但是不触发其他效果；
                 // console.log($('ul.level02 li:eq(0) a'));
                 // console.log($('ul.level02 li:eq(0) a')[0]);
                 $(this).find('b').toggleClass('rotate0');
