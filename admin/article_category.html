@@ -78,7 +78,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="cancel">取消</button>
                     <button type="button" class="btn btn-primary" id="sure">确认</button>
                 </div>
             </div>
@@ -116,6 +116,10 @@
 
         get();
         // show.bs.modal
+        // 取消的时候格式化；
+        $('#cancel').on('click', function () {
+            $('#myModal')[0].reset();
+        })
         $('#myModal').on('show.bs.modal', function (e) {
             let sel = e.relatedTarget;
             // e.relatedTarget为了可以获取点击的DOM元素
@@ -124,6 +128,34 @@
             if (sel == $("#xinzengfenlei")[0]) {
                 $('#exampleModalLabel').text('看你想新增什么了罗');
                 $("#sure").text('新增').removeClass('btn-primary').addClass('btn-success');
+                $("form")[0].reset();
+                // $(this)[0].reset();
+                // 此时不要用这个模态框因为点击而弹出不知道是弹出还是格式化；
+                $('#sure').on('click', function () {
+                    let name = $('#recipient-name').val().trim();
+                    let content = $("#message-text").val().trim();
+                    if (name == '' || content == '') {
+                        alert('请好好输入')
+                        return;
+                    }
+                    $.ajax({
+                        url: allUrl.category_add,
+                        type: 'post',
+                        data: {
+                            name: name,
+                            slug: content,
+                        },
+                        success: function (res) {
+                            console.log(res);
+                            if (res.code === 201) {
+                                $('#myModal').modal('hide');
+                                get();
+                            }
+
+                        }
+                    })
+                })
+
             } else {
                 $('#exampleModalLabel').text('看你想修改什么了罗');
                 $("#sure").text('修改').removeClass('btn-success').addClass('btn-primary');
@@ -157,7 +189,7 @@
                         success: function (res) {
                             // console.log(res)
                             if (res.code === 200) {
-                                $('#myModal').modal('hide')
+                                $('#myModal').modal('hide');
                                 get();
                             }
                         }
