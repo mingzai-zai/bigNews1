@@ -51,6 +51,40 @@
             </table>
         </div>
     </div>
+
+
+    <!-- 模态框 -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">New</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <input type="hidden" id="bid">
+                        <div class="form-group">
+                            <label for="recipient-name" class="col-form-label">名称</label>
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="col-form-label">Slug</label>
+                            <textarea class="form-control" id="message-text"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="sure">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 <script src="./libs/http.js"></script>
 <script type="text/html" id="tp">
@@ -59,26 +93,80 @@
             <td>{{ v.name}}</td>
             <td>{{ v.slug}}</td>
             <td class="text-center">
-                <a href="javascript:void(0)" data-toggle="modal" class=" btn btn-info btn-xs" data-id="{{ v.id}}">编辑</a>
-                <a href="javascript:void(0)" class="btn btn-danger btn-xs" data-id="{{ v.id}}">删除</a>
+                <a href="javascript:void(0)" data-toggle="modal" class=" btn btn-info btn-xs" data-id="{{ v.id}}" data-target="#myModal">编辑</a>
+                <a href="javascript:void(0)" class="btn btn-danger btn-xs" data-id="{{ v.id }}" >删除</a>
             </td>
         </tr>
 {{/each}}
 </script>
 <script>
     $(function () {
-        $.ajax({
-            url: allUrl.category_list,
-            type: 'get',
-            success: function (res) {
-                if (res.code === 200) {
-                    let html = template('tp', res.data);
-                    $('tbody').append(html);
+        function get() {
+            $.ajax({
+                url: allUrl.category_list,
+                type: 'get',
+                success: function (res) {
+                    if (res.code === 200) {
+                        let trhtml = template('tp', res.data);
+                        $('tbody').html(trhtml);
+                    }
                 }
+            })
+        }
+
+        get();
+        // show.bs.modal
+        $('#myModal').on('show.bs.modal', function (e) {
+            let sel = e.relatedTarget;
+            // e.relatedTarget为了可以获取点击的DOM元素
+            // console.log(sel);
+            // console.log($("#xinzengfenlei"));
+            if (sel == $("#xinzengfenlei")[0]) {
+                $('#exampleModalLabel').text('看你想新增什么了罗');
+                $("#sure").text('新增').removeClass('btn-primary').addClass('btn-success');
+            } else {
+                $('#exampleModalLabel').text('看你想修改什么了罗');
+                $("#sure").text('修改').removeClass('btn-success').addClass('btn-primary');
+                let id = $(sel).attr('data-id');
+                // console.log(id);
+                $.get({
+                    url: allUrl.category_search,
+                    data: { id: id },
+                    success: function (res) {
+                        if (res.code === 200) {
+                            // console.log(res);
+                            $('#recipient-name').val(res.data[0].name);
+                            $("#message-text").val(res.data[0].slug);
+                            // 没东西存的话就用隐藏域来存id
+                            $('#bid').val(res.data[0].id);
+                        }
+                    }
+
+                })
+                $("#sure").on('click', function () {
+                    let name = $('#recipient-name').val();
+                    let content = $("#message-text").val();
+                    let id = $('#bid').val();
+                    $.post({
+                        url: allUrl.category_edit,
+                        data: {
+                            id: id,
+                            name: name,
+                            slug: content,
+                        },
+                        success: function (res) {
+                            // console.log(res)
+                            if (res.code === 200) {
+                                $('#myModal').modal('hide')
+                                get();
+                            }
+                        }
+                    })
+                })
+
             }
+
         })
-
-
 
 
 
