@@ -62,12 +62,75 @@
                 </div>
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        <button type="submit" class="btn btn-success btn-edit">修改</button>
+                        <button type="submit" class="btn btn-success btn-edit" id="btn-xiu">修改</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
 </body>
+<script src="./libs/http.js"></script>
+<script>
+    $(function () {
+
+        $.get({
+            url: allUrl.user_detail,
+            success: function (res) {
+                if (res.code === 200) {
+                    console.log(res);
+                    for (let key in res.data) {
+                        $('.' + key).val(res.data[key]);
+                    }
+                    $('.user_pic').attr('src', res.data.userPic);
+                }
+            }
+
+        })
+
+        $('#exampleInputFile').on('change', function () {
+            // console.dir($(this));
+            let file = this.files[0];
+            let url = URL.createObjectURL(file);
+            // console.log(url);
+            $('.user_pic').attr('src', url);
+            $(this).hide();
+        });
+
+        $('#btn-xiu').on('click', function (e) {
+            e.preventDefault();
+            let val = $('#form')[0];
+            // FormData数据里面只能放DOM,不能放jq对象；
+            let data = new FormData(val);
+            $.post({
+                url: allUrl.user_edit,
+                data: data,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    // 修改数据的同时记得要把外面的都要改了
+                    if (res.code === 200) {
+                        // parent.window.location.reload();
+
+                        $.get({
+                            url: allUrl.user_info,
+                            success: function (res) {
+                                if (res.code === 200) {
+                                    console.log(res)
+                                    parent.$('.user_info img').attr('src', res.data.userPic)
+                                    parent.$('.user_info span').html('欢迎&nbsp;&nbsp;' + res.data.nickname);
+                                    parent.$('.user_center_link img').attr('src', res.data.userPic);
+                                }
+                            }
+                        })
+                    }
+                }
+            })
+        })
+
+
+
+    })
+
+</script>
 
 </html>
