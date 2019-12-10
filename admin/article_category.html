@@ -108,6 +108,7 @@
                 success: function (res) {
                     if (res.code === 200) {
                         let trhtml = template('tp', res.data);
+                        // 此时不要用append，append添加编制时候也会添加
                         $('tbody').html(trhtml);
                     }
                 }
