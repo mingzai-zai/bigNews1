@@ -137,6 +137,7 @@
         $('.btn-draft').on('click', function (e) {
             e.preventDefault();
             let fd = new FormData($('#form')[0]);
+            // 获取的是form里的input  name和val值
             fd.append('content', editor.txt.html());
             $.post({
                 url: allUrl.article_publish,

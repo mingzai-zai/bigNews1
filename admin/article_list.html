@@ -81,13 +81,13 @@
 <script>
     // 设置id为了后面可以选取筛选根据id来设置类型；
 </script>
-<script type="text\html" id="option-list">
+<script type="text/html" id="option-list">
 {{each $data v i}}
 <option value="">所有分类</option>
 <option value={{v.id}}>{{ v.name }}</option>
 {{/each}}
 </script>
-<script type="text\html" id="list">
+<script type="text/html" id="list">
         {{each $data v i}}
         <tr>
                 <td>{{ v.title }}</td>

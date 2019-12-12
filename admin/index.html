@@ -46,7 +46,7 @@
                 </li>
             </ul>
 
-            <div class="level01"><a href="./article_category.html" target="main_frame"><i
+            <div class="level01"><a href="./comment_list.html" target="main_frame"><i
                         class="iconfont icon-comment"></i><span>评论管理</span></a></div>
             <div class="level01" id="user"><a href="./user.html" target="main_frame"><i
                         class="iconfont icon-user"></i><span>个人中心</span></a></div>
@@ -79,7 +79,7 @@
             // headers: { 'Authorization': localStorage.getItem('token') },
             // 因为每一个网页都是需要一个token来知道是否是该用户的所以可以在ajax时候设置默认值
             success: function (res) {
-                console.log(res);
+                // console.log(res);
                 if (res.code === 200) {
                     $('.user_info img').attr('src', res.data.userPic);
                     $('.user_info span').html('欢迎&nbsp;&nbsp;' + res.data.nickname);

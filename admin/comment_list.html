@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="css/main.css">
   <script src="./libs/jquery-1.12.4.min.js"></script>
   <script src="./libs/template-web.js"></script>
+  <script src="./libs/jquery.twbsPagination.js"></script>
 </head>
 
 <body>
@@ -32,7 +33,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
+          <!-- <tr>
             <td>小周</td>
             <td>这是一条测试评论，欢迎光临</td>
             <td>《世界，你好》</td>
@@ -138,11 +139,11 @@
               <a href="javascript:editTr( 'rejected',11 );" class="btn btn-warning btn-xs">拒绝</a>
               <a href="javascript:editTr( 'trashed',11 );" class="btn btn-danger btn-xs">删除</a>
             </td>
-          </tr>
+          </tr> -->
         </tbody>
       </table>
       <div class="row text-center">
-        <ul class="pagination pagination-sm">
+        <!-- <ul class="pagination pagination-sm">
           <li class="page-item first disabled"><a href="#" class="page-link">首页</a></li>
           <li class="page-item prev disabled"><a href="#" class="page-link">上一页</a></li>
           <li class="page-item active"><a href="#" class="page-link">1</a></li>
@@ -154,12 +155,130 @@
           <li class="page-item"><a href="#" class="page-link">7</a></li>
           <li class="page-item next"><a href="#" class="page-link">下一页</a></li>
           <li class="page-item last"><a href="#" class="page-link">尾页</a></li>
-        </ul>
+        </ul> -->
         <ul id="pagination" class="pagination-sm"></ul>
       </div>
 
     </div>
   </div>
 </body>
+<script src="./libs/http.js"></script>
+<script type="text/html" id="list">
+{{each $data v i}}
+{{ if( v.state=='待审核') }}
+<tr class="danger">
+  {{ else }}
+  <tr>
+    {{ /if }}
+    <td>{{ v.author }}</td>
+    <td>{{ v.content }}</td>
+    <td>{{ v.title }}</td>
+    <td>{{ v.date }} {{ v.time }}</td>
+    <td>{{ v.state }}</td>
+    <td class="text-center">
+        {{ if( v.state=='待审核') }}
+      <a href="javascript:editTr( 'rejected',11 );" data-id="{{v.id}}" class="btn btn-success btn-xs btn-pass">通过</a>
+      {{ else if( v.state=='已通过') }}
+      <a href="javascript:editTr( 'rejected',11 );" data-id="{{v.id}}" class="btn btn-primary btn-xs btn-refuse">拒绝</a>
+      {{ else if( v.state=='已拒绝') }}
+      <a href="javascript:editTr( 'rejected',11 );" data-id="{{v.id}}" class="btn btn-warning btn-xs btn-pass">通过</a>
+      {{/if}}
+      <a href="javascript:editTr( 'trashed',11 );" data-id="{{v.id}}" class="btn btn-danger btn-xs">删除</a>
+    </td>
+  </tr>
+{{/each}}
+</script>
+<script>
+  $(function () {
+    let pages = 1;
+    let hang = 10;
+    function get(pages, callback) {
+      $.get({
+        url: allUrl.comment_list,
+        data: {
+          page: pages,
+          perpage: hang,
+        },
+        success: function (res) {
+          if (res.code === 200) {
+            console.log(res);
+            let htmlStr = template('list', res.data.data);
+            $('tbody').html(htmlStr);
+            if (callback != null && res.data.data.length != 0) {
+              callback(res);
+            } else if (pages > 1 && res.data.data.length == 0) {
+              get(pages - 1, function (res) {
+                $('#pagination').twbsPagination('changeTotalPages', res.data.totalPage, pages - 1)
+              })
+            } else if (res.data.data.length == 0) {
+              alert('没有数据了');
+              return;
+            }
+          }
+        }
+      })
+    }
+    get(pages, function (res) {
+      $('#pagination').twbsPagination({
+        totalPages: res.data.totalPage,
+        visiblePages: 7,
+        first: '首页',
+        next: '下一页',
+        prev: '上一页',
+        last: '尾页',
+        onPageClick: function (event, page) {
+          pages = page;
+          get(pages, null);
+        }
+      })
+    })
+    $('tbody').on('click', '.btn-pass', function () {
+      let id = $(this).attr('data-id');
+      $.post({
+        url: allUrl.comment_pass,
+        data: { id: id },
+        success: function (res) {
+          get(pages, null);
+        }
+      })
+
+    })
+    $('tbody').on('click', '.btn-refuse', function () {
+      let id = $(this).attr('data-id');
+      $.post({
+        url: allUrl.comment_reject,
+        data: { id: id },
+        success: function (res) {
+          get(pages, null);
+        }
+      })
+
+    })
+    $('tbody').on('click', '.btn-danger', function () {
+      let id = $(this).attr('data-id');
+      if (confirm('确定吗，小靓仔')) {
+        $.ajax({
+          url: allUrl.comment_delete,
+          type: 'post',
+          data: { id: id },
+          success: function (res) {
+            if (res.code === 200) {
+              // 刷新页面
+              get(pages, function (res) {
+                $('#pagination').twbsPagination('changeTotalPages', res.data.totalPage, pages)
+              })
+            }
+          }
+        })
+      }
+    })
+
+
+
+
+
+
+  })
+</script>
 
 </html>
