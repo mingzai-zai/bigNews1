@@ -57,7 +57,7 @@
                     <div class="jeinpbox col-sm-4">
                         <input type="text" class="jeinput" id="testico" placeholder="YYYY-MM-DD" name="date">
                         <div class="icons jebtns"
-                            onclick="jeDate('#testico',{trigger:false,format: 'YYYY-MM-DD', zIndex:2099, })">
+                            onclick="jeDate('#testico',{trigger:false,format: 'YYYY-MM-DD', zIndex: 10000, })">
                         </div>
                     </div>
                 </div>
@@ -90,7 +90,7 @@
             format: "YYYY-MM-DD",
             isTime: false,
             minDate: "2014-09-19 00:00:00",
-            zIndex: 2099,
+            zIndex: 10000,
         })
         // 预览图片的;
         $('#inputCover').on('change', function () {
